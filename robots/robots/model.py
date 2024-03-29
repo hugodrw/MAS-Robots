@@ -11,13 +11,13 @@ Replication of the model found in NetLogo:
 
 import mesa
 
-from .agents import Waste
+from .agents import Waste, Robot
 from .scheduler import RandomActivationByTypeFiltered
 
 
 class RadioactiveEnv(mesa.Model):
     """
-    Wolf-Sheep Predation Model
+    Radioactive environment model
     """
     
 
@@ -25,7 +25,8 @@ class RadioactiveEnv(mesa.Model):
         self,
         width=20,
         height=20,
-        initial_waste=5
+        initial_wastes=5,
+        initial_robots=5
     ):
         """
         Create a model with wastes to move.
@@ -37,7 +38,8 @@ class RadioactiveEnv(mesa.Model):
         # Set parameters
         self.width = width
         self.height = height
-        self.initial_waste = initial_waste
+        self.initial_wastes = initial_wastes
+        self.initial_robots = initial_robots
         
         # Setup the scheduler
         self.schedule = RandomActivationByTypeFiltered(self)
@@ -53,12 +55,20 @@ class RadioactiveEnv(mesa.Model):
         )
 
         # Add the wastes
-        for i in range(self.initial_waste):
+        for i in range(self.initial_wastes):
             x = self.random.randrange(self.width)
             y = self.random.randrange(self.height)
             waste = Waste(self.next_id(), (x, y), self)
             self.grid.place_agent(waste, (x, y))
             self.schedule.add(waste)
+
+        # Add the robots
+        for i in range(self.initial_robots):
+            x = self.random.randrange(self.width)
+            y = self.random.randrange(self.height)
+            robot = Robot(self.next_id(), (x, y), self, True)
+            self.grid.place_agent(robot, (x, y))
+            self.schedule.add(robot)
 
     def step(self):
         self.schedule.step()

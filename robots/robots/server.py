@@ -1,5 +1,5 @@
 import mesa
-from robots.agents import Waste
+from robots.agents import Waste, Robot
 from robots.model import RadioactiveEnv
 
 
@@ -15,13 +15,12 @@ def wolf_sheep_portrayal(agent):
         portrayal["scale"] = 0.9
         portrayal["Layer"] = 1
 
-    # elif type(agent) is Wolf:
-    #     portrayal["Shape"] = "wolf_sheep/resources/wolf.png"
-    #     # https://icons8.com/web-app/36821/German-Shepherd
-    #     portrayal["scale"] = 0.9
-    #     portrayal["Layer"] = 2
-    #     portrayal["text"] = round(agent.energy, 1)
-    #     portrayal["text_color"] = "White"
+    elif type(agent) is Robot:
+        portrayal["Shape"] = "robots/resources/robot.png"
+        # https://icons8.com/web-app/36821/German-Shepherd
+        portrayal["scale"] = 0.9
+        portrayal["Layer"] = 2
+        portrayal["text_color"] = "Black"
 
     # elif type(agent) is GrassPatch:
     #     if agent.fully_grown:
