@@ -23,27 +23,12 @@ class Sheep(RandomWalker):
         pass
 
 
-class Wolf(RandomWalker):
-    """
-    A wolf that walks around, reproduces (asexually) and eats sheep.
-    """
-
-    energy = None
-
-    def __init__(self, unique_id, pos, model, moore, energy=None):
-        super().__init__(unique_id, pos, model, moore=moore)
-        pass
-
-    def step(self):
-        pass
-
-
-class GrassPatch(mesa.Agent):
+class Waste(mesa.Agent):
     """
     A patch of grass that grows at a fixed rate and it is eaten by sheep
     """
 
-    def __init__(self, unique_id, pos, model, fully_grown, countdown):
+    def __init__(self, unique_id, pos, model):
         """
         Creates a new patch of grass
 
