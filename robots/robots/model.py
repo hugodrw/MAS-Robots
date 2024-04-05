@@ -89,7 +89,7 @@ class RadioactiveEnv(mesa.Model):
                 # TODO - check if the cell is already occupied
                 x = self.random.randrange(zone_value[0], zone_value[1])
                 y = self.random.randrange(self.height)
-                robot = Robot(self.next_id(), (x, y), self, True, colour=zone_key)
+                robot = Robot(self.next_id(), (x, y), self,zone_value, True,colour=zone_key)
                 self.grid.place_agent(robot, (x, y))
                 self.schedule.add(robot)
 

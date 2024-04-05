@@ -9,8 +9,8 @@ class Robot(ShortSightWalker):
     Wooohooo robots!
     """
 
-    def __init__(self, unique_id, pos, model, moore, colour='yellow'):
-        super().__init__(unique_id, pos, model, moore=moore)
+    def __init__(self, unique_id, pos, model, range, moore, colour='yellow'):
+        super().__init__(unique_id, pos, model, range, moore=moore)
         self.wastelist = []
         self.colour = colour
         

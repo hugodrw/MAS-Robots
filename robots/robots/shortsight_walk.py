@@ -18,7 +18,7 @@ class ShortSightWalker(mesa.Agent):
     y = None
     moore = True
 
-    def __init__(self, unique_id, pos, model, moore=True):
+    def __init__(self, unique_id, pos, model, range, moore=True):
         """
         grid: The MultiGrid object in which the agent lives.
         x: The agent's current x coordinate
@@ -29,17 +29,29 @@ class ShortSightWalker(mesa.Agent):
         super().__init__(unique_id, model)
         self.pos = pos
         self.moore = moore
+        self.range = range
 
     def greedy_move(self):
         """
         If there is waste in the adjacent cells, move to the cell with the waste.
         """
         # Find the available cells
-        # TODO: limit to the robot zone? ATM limit to grid
-        available_cells = self.model.grid.get_neighborhood(self.pos, self.moore, True)
-        print('next_moves: ', available_cells)
+        base_cells = list(self.model.grid.get_neighborhood(self.pos, self.moore, True))
+
+        print('My position: ', self.pos)
+        print('grid cells', base_cells)
+        print('len before filter: ', len(base_cells))
+        grid_cells = []
+        # Remove cells outside the robot's zone
+        for cell in base_cells:
+            if cell[0] in range(self.range[0],self.range[1]):
+                grid_cells.append(cell)
+        
+        print('len after filter: ', len(grid_cells))
+        print('grid cells after', grid_cells)
+
         next_move = None
-        for cell in available_cells:
+        for cell in grid_cells:
             cell_contents = self.model.grid.get_cell_list_contents(cell)
             for content in cell_contents:
                     print('content name: ', content.__class__.__name__)  
@@ -49,6 +61,6 @@ class ShortSightWalker(mesa.Agent):
                         break
         if next_move is None:
             print('No waste found!')
-            next_move = self.random.choice(available_cells)
+            next_move = self.random.choice(grid_cells)
         # Now move:
         self.model.grid.move_agent(self, next_move)
