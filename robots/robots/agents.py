@@ -1,9 +1,10 @@
 import mesa
 
 from .random_walk import RandomWalker
+from .shortsight_walk import ShortSightWalker
 
 
-class Robot(RandomWalker):
+class Robot(ShortSightWalker):
     """
     Wooohooo robots!
     """
@@ -17,7 +18,8 @@ class Robot(RandomWalker):
         """
         A model step. 
         """
-        self.random_move()
+        self.greedy_move()
+        # self.random_move()
 
         if len(self.wastelist) > 0:
             print("I have waste!")

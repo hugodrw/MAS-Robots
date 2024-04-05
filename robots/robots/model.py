@@ -23,7 +23,7 @@ class RadioactiveEnv(mesa.Model):
 
     def __init__(
         self,
-        width=20,
+        width=21,
         height=20,
         initial_wastes=25,
         initial_robots=5
@@ -40,6 +40,10 @@ class RadioactiveEnv(mesa.Model):
         self.height = height
         self.initial_wastes = initial_wastes
         self.initial_robots = initial_robots
+
+        # Check if the width is divisible by 3, otherwise throw an error
+        if self.width % 3 != 0:
+            raise ValueError("The grid width must be divisible by 3")
         
         # Setup the scheduler
         self.schedule = RandomActivationByTypeFiltered(self)
