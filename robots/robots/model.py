@@ -11,13 +11,13 @@ Replication of the model found in NetLogo:
 
 import mesa
 
-from .agents import GrassPatch, Sheep, Wolf
+from .agents import Waste, Robot
 from .scheduler import RandomActivationByTypeFiltered
 
 
-class WolfSheep(mesa.Model):
+class RadioactiveEnv(mesa.Model):
     """
-    Wolf-Sheep Predation Model
+    Radioactive environment model
     """
     
 
@@ -25,38 +25,71 @@ class WolfSheep(mesa.Model):
         self,
         width=20,
         height=20,
-        initial_sheep=100,
-        initial_wolves=50,
-        sheep_reproduce=0.04,
-        wolf_reproduce=0.05,
-        wolf_gain_from_food=20,
-        grass=False,
-        grass_regrowth_time=30,
-        sheep_gain_from_food=4,
+        initial_wastes=25,
+        initial_robots=5
     ):
         """
-        Create a new Wolf-Sheep model with the given parameters.
+        Create a model with wastes to move.
 
         Args:
-            initial_sheep: Number of sheep to start with
-            initial_wolves: Number of wolves to start with
-            sheep_reproduce: Probability of each sheep reproducing each step
-            wolf_reproduce: Probability of each wolf reproducing each step
-            wolf_gain_from_food: Energy a wolf gains from eating a sheep
-            grass: Whether to have the sheep eat grass for energy
-            grass_regrowth_time: How long it takes for a grass patch to regrow
-                                 once it is eaten
-            sheep_gain_from_food: Energy sheep gain from grass, if enabled.
+
         """
         super().__init__()
         # Set parameters
-        pass
+        self.width = width
+        self.height = height
+        self.initial_wastes = initial_wastes
+        self.initial_robots = initial_robots
+        
+        # Setup the scheduler
+        self.schedule = RandomActivationByTypeFiltered(self)
+
+        # Initiliase the map
+        self.grid = mesa.space.MultiGrid(self.width, self.height, torus=False)
+
+        # Setup the data collector
+        self.datacollector = mesa.DataCollector(
+            {
+                "Waste": lambda m: m.schedule.get_type_count(Waste)
+            }
+        )
+
+        # Add the wastes
+        for i in range(self.initial_wastes):
+            # TODO - check if the cell is already occupied
+            x = self.random.randrange(self.width)
+            y = self.random.randrange(self.height)
+            waste = Waste(self.next_id(), (x, y), self)
+            self.grid.place_agent(waste, (x, y))
+            self.schedule.add(waste)
+
+        # Add the robots
+        for i in range(self.initial_robots):
+            # TODO - check if the cell is already occupied
+            x = self.random.randrange(self.width)
+            y = self.random.randrange(self.height)
+            robot = Robot(self.next_id(), (x, y), self, True)
+            self.grid.place_agent(robot, (x, y))
+            self.schedule.add(robot)
+
+    def collect_waste(self):
+        '''
+            Add the waste to each robot's waste list if it is on the same cell
+        '''
+        for agent in self.schedule.agents:
+            if isinstance(agent, Robot):            
+                cellmates = self.grid.get_cell_list_contents([agent.pos])
+                for cellmate in cellmates:
+                    if isinstance(cellmate, Waste):
+                        agent.wastelist.append(cellmate)
+                        self.grid.remove_agent(cellmate)
+                        self.schedule.remove(cellmate)
 
     def step(self):
         self.schedule.step()
         # collect data
         self.datacollector.collect(self)
-        pass
+        self.collect_waste()
 
     def run_model(self, step_count=200):
         pass

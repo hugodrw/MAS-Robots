@@ -3,53 +3,37 @@ import mesa
 from .random_walk import RandomWalker
 
 
-class Sheep(RandomWalker):
+class Robot(RandomWalker):
     """
-    A sheep that walks around, reproduces (asexually) and gets eaten.
-
-    The init is the same as the RandomWalker.
+    Wooohooo robots!
     """
 
-    energy = None
-
-    def __init__(self, unique_id, pos, model, moore, energy=None):
+    def __init__(self, unique_id, pos, model, moore):
         super().__init__(unique_id, pos, model, moore=moore)
-        self.energy = energy
+        self.wastelist = []
+        
 
     def step(self):
         """
         A model step. 
         """
-        pass
+        self.random_move()
+
+        if len(self.wastelist) > 0:
+            print("I have waste!")
+            print('items in the list: ', len(self.wastelist))
 
 
-class Wolf(RandomWalker):
+class Waste(mesa.Agent):
     """
-    A wolf that walks around, reproduces (asexually) and eats sheep.
-    """
-
-    energy = None
-
-    def __init__(self, unique_id, pos, model, moore, energy=None):
-        super().__init__(unique_id, pos, model, moore=moore)
-        pass
-
-    def step(self):
-        pass
-
-
-class GrassPatch(mesa.Agent):
-    """
-    A patch of grass that grows at a fixed rate and it is eaten by sheep
+    Waste baby!
     """
 
-    def __init__(self, unique_id, pos, model, fully_grown, countdown):
+    def __init__(self, unique_id, pos, model):
         """
-        Creates a new patch of grass
 
         Args:
-            grown: (boolean) Whether the patch of grass is fully grown or not
-            countdown: Time for the patch of grass to be fully grown again
+
         """
         super().__init__(unique_id, model)
         pass
