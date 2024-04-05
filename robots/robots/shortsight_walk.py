@@ -62,5 +62,18 @@ class ShortSightWalker(mesa.Agent):
         if next_move is None:
             print('No waste found!')
             next_move = self.random.choice(grid_cells)
-        # Now move:
+        
         self.model.grid.move_agent(self, next_move)
+
+    def move_right(self):
+        """
+        Move right
+        """
+        # Check if the robot is at the right edge of the zone
+        if self.pos[0] == self.range[1]-1:
+            print('Cannot go right, I am already at the right edge of my zone!!')
+            return
+
+        right_move = (self.pos[0]+1, self.pos[1])
+        
+        self.model.grid.move_agent(self, right_move)
