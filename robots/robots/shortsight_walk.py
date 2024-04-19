@@ -35,21 +35,15 @@ class ShortSightWalker(mesa.Agent):
         """
         If there is waste in the adjacent cells, move to the cell with the waste.
         """
-        # Find the available cells
+        # Find the available cells in the grid
         base_cells = list(self.model.grid.get_neighborhood(self.pos, self.moore, True))
-
-        print('My position: ', self.pos)
-        print('grid cells', base_cells)
-        print('len before filter: ', len(base_cells))
+        
+        # Restrict the robot to it's zones
         grid_cells = []
-        # Remove cells outside the robot's zone
         for cell in base_cells:
-            if cell[0] in range(self.range[0],self.range[1]):
+            if cell[0] in range(0,self.range[1]):
                 grid_cells.append(cell)
         
-        print('len after filter: ', len(grid_cells))
-        print('grid cells after', grid_cells)
-
         next_move = None
         for cell in grid_cells:
             cell_contents = self.model.grid.get_cell_list_contents(cell)
