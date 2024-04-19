@@ -1,4 +1,5 @@
 import mesa
+from collections import namedtuple
 
 from .random_walk import RandomWalker
 from .shortsight_walk import ShortSightWalker
@@ -9,11 +10,12 @@ class Robot(ShortSightWalker):
     Robots!
     """
 
-    def __init__(self, unique_id, pos, model, range, moore, colour='yellow'):
-        super().__init__(unique_id, pos, model, range, moore=moore)
+    def __init__(self, unique_id, pos, model, x_range, moore, colour='yellow'):
+        super().__init__(unique_id, pos, model, x_range, moore=moore)
         self.wastelist = []
         self.colour = colour
         self.policy = 'greedy'
+        self.knowledge = namedtuple('knowledge', ['waste', 'zone'])
         
     
     def percept(self):
