@@ -11,7 +11,7 @@ Replication of the model found in NetLogo:
 
 import mesa
 
-from .agents import Waste, Robot
+from .agents import Waste, Robot, Grid_Tile
 from .scheduler import RandomActivationByTypeFiltered
 
 
@@ -23,10 +23,11 @@ class RadioactiveEnv(mesa.Model):
 
     def __init__(
         self,
-        width=20,
-        height=20,
-        initial_wastes=25,
-        initial_robots=5
+        width=21,
+        height=5,
+        initial_wastes_per_zone=2,
+        initial_robots_per_zone=1
+        # TODO: Hardcoded for now in server
     ):
         """
         Create a model with wastes to move.
@@ -38,14 +39,20 @@ class RadioactiveEnv(mesa.Model):
         # Set parameters
         self.width = width
         self.height = height
-        self.initial_wastes = initial_wastes
-        self.initial_robots = initial_robots
+        self.initial_wastes_per_zone = initial_wastes_per_zone
+        self.initial_robots_per_zone = initial_robots_per_zone
+
+        # Check if the width is divisible by 3, otherwise throw an error
+        if self.width % 3 != 0:
+            raise ValueError("The grid width must be divisible by 3")
         
+        # Setup the zone locations
+        self.zone_locations = {'green':(0, self.width//3),
+            'yellow':(self.width//3, self.width*2//3),
+            'red':(self.width*2//3, self.width)}
+
         # Setup the scheduler
         self.schedule = RandomActivationByTypeFiltered(self)
-
-        # Initiliase the map
-        self.grid = mesa.space.MultiGrid(self.width, self.height, torus=False)
 
         # Setup the data collector
         self.datacollector = mesa.DataCollector(
@@ -53,24 +60,38 @@ class RadioactiveEnv(mesa.Model):
                 "Waste": lambda m: m.schedule.get_type_count(Waste)
             }
         )
+        
+        # Initiliase the map
+        self.grid = mesa.space.MultiGrid(self.width, self.height, torus=False)
 
-        # Add the wastes
-        for i in range(self.initial_wastes):
-            # TODO - check if the cell is already occupied
-            x = self.random.randrange(self.width)
-            y = self.random.randrange(self.height)
-            waste = Waste(self.next_id(), (x, y), self)
-            self.grid.place_agent(waste, (x, y))
-            self.schedule.add(waste)
+        # Place wastes, robots and tiles on the grid
+        for zone_key, zone_value in self.zone_locations.items():
 
-        # Add the robots
-        for i in range(self.initial_robots):
-            # TODO - check if the cell is already occupied
-            x = self.random.randrange(self.width)
-            y = self.random.randrange(self.height)
-            robot = Robot(self.next_id(), (x, y), self, True)
-            self.grid.place_agent(robot, (x, y))
-            self.schedule.add(robot)
+            # Fill each zone with tiles of its colour 
+            for x in range(zone_value[0], zone_value[1]):
+                for y in range(self.height):
+                    tile = Grid_Tile(self.next_id(), (x, y), self, colour=zone_key)
+                    self.grid.place_agent(tile, (x, y))
+                    self.schedule.add(tile)
+
+            # Add the wastes to the zone
+            for i in range(self.initial_wastes_per_zone):
+                # TODO - check if the cell is already occupied
+                # Limit the x range to the width
+                x = self.random.randrange(zone_value[0], zone_value[1])
+                y = self.random.randrange(self.height)
+                waste = Waste(self.next_id(), (x, y), self, colour=zone_key)
+                self.grid.place_agent(waste, (x, y))
+                self.schedule.add(waste)
+            
+            # Add the robot to the zone
+            for i in range(self.initial_robots_per_zone):
+                # TODO - check if the cell is already occupied
+                x = self.random.randrange(zone_value[0], zone_value[1])
+                y = self.random.randrange(self.height)
+                robot = Robot(self.next_id(), (x, y), self,zone_value, True,colour=zone_key)
+                self.grid.place_agent(robot, (x, y))
+                self.schedule.add(robot)
 
     def collect_waste(self):
         '''

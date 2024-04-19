@@ -1,5 +1,5 @@
 import mesa
-from robots.agents import Waste, Robot
+from robots.agents import Waste, Robot, Grid_Tile
 from robots.model import RadioactiveEnv
 
 
@@ -9,14 +9,21 @@ def wolf_sheep_portrayal(agent):
 
     portrayal = {}
 
-    if type(agent) is Waste:
-        portrayal["Shape"] = "robots/resources/waste_yellow.png"
+    if type(agent) is Grid_Tile:
+        portrayal["Shape"] = f"robots/resources/tile_{agent.colour}.png"
+        # https://icons8.com/web-app/36821/German-Shepherd
+        portrayal["scale"] = 0.9
+        portrayal["Layer"] = 0
+        portrayal["text_color"] = "Black"
+
+    elif type(agent) is Waste:
+        portrayal["Shape"] = f"robots/resources/waste_{agent.colour}.png"
         # https://icons8.com/web-app/433/sheep
         portrayal["scale"] = 0.9
         portrayal["Layer"] = 1
 
     elif type(agent) is Robot:
-        portrayal["Shape"] = "robots/resources/robot.png"
+        portrayal["Shape"] = f"robots/resources/robot_{agent.colour}.png"
         # https://icons8.com/web-app/36821/German-Shepherd
         portrayal["scale"] = 0.9
         portrayal["Layer"] = 2
@@ -36,7 +43,7 @@ def wolf_sheep_portrayal(agent):
     return portrayal
 
 
-canvas_element = mesa.visualization.CanvasGrid(wolf_sheep_portrayal, 20, 20, 500, 500)
+canvas_element = mesa.visualization.CanvasGrid(wolf_sheep_portrayal, 21, 5, 500, 125)
 chart_element = mesa.visualization.ChartModule(
     [
         {"Label": "Waste", "Color": "#AA0000"}
