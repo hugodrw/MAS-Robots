@@ -1,8 +1,5 @@
 import mesa
 from collections import namedtuple
-
-from .random_walk import RandomWalker
-from .shortsight_walk import ShortSightWalker
 import random
 
 
@@ -85,21 +82,25 @@ def deliberate(knowledge: KnowledgeBase):
     return movement, handlewaste
 
 
-class Robot(ShortSightWalker):
+class Robot(mesa.Agent):
     """
     Robots!
     """
 
     def __init__(self, unique_id, pos, model, x_range, moore, colour='yellow'):
-        super().__init__(unique_id, pos, model, x_range, colour, moore=moore)
+        # super().__init__(unique_id, pos, model, x_range, colour, moore=moore)
         # self.wastelist = []
         # self.policy = 'greedy'
 
+        super().__init__(unique_id, model)
         # Setup the knowledge base
         self.knowledge = KnowledgeBase(colour, x_range)
+        # Generally available variables
         self.waste_list = []
         self.percepts = None
         self.x_range = x_range
+        self.pos = pos
+        self.colour = colour
     
     def percept(self):
         # The robot is very intrsopective
