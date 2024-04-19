@@ -18,7 +18,7 @@ class ShortSightWalker(mesa.Agent):
     y = None
     moore = True
 
-    def __init__(self, unique_id, pos, model, range, moore=True):
+    def __init__(self, unique_id, pos, model, x_range, moore=True):
         """
         grid: The MultiGrid object in which the agent lives.
         x: The agent's current x coordinate
@@ -29,7 +29,7 @@ class ShortSightWalker(mesa.Agent):
         super().__init__(unique_id, model)
         self.pos = pos
         self.moore = moore
-        self.range = range
+        self.range = x_range
 
     def greedy_move(self):
         """
