@@ -4,6 +4,13 @@ from collections import namedtuple
 from .random_walk import RandomWalker
 from .shortsight_walk import ShortSightWalker
 
+class KnowledgeBase:
+    # The knowledge base for the robot
+    def __init__(self, colour):
+        self.wastelist = []
+        self.colour = colour
+        self.policy = 'greedy'
+
 
 class Robot(ShortSightWalker):
     """
@@ -11,11 +18,13 @@ class Robot(ShortSightWalker):
     """
 
     def __init__(self, unique_id, pos, model, x_range, moore, colour='yellow'):
-        super().__init__(unique_id, pos, model, x_range, moore=moore)
+        super().__init__(unique_id, pos, model, x_range, colour, moore=moore)
         self.wastelist = []
         self.colour = colour
         self.policy = 'greedy'
-        self.knowledge = namedtuple('knowledge', ['waste', 'zone'])
+
+        # Setup the knowledge base
+        
         
     
     def percept(self):

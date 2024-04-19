@@ -87,7 +87,8 @@ class RadioactiveEnv(mesa.Model):
             # Add the robot to the zone
             for i in range(self.initial_robots_per_zone):
                 # TODO - check if the cell is already occupied
-                x = self.random.randrange(zone_value[0], zone_value[1])
+                # x = self.random.randrange(zone_value[0], zone_value[1])
+                x = 0
                 y = self.random.randrange(self.height)
                 robot = Robot(self.next_id(), (x, y), self,zone_value, True,colour=zone_key)
                 self.grid.place_agent(robot, (x, y))
@@ -101,7 +102,7 @@ class RadioactiveEnv(mesa.Model):
             if isinstance(agent, Robot):            
                 cellmates = self.grid.get_cell_list_contents([agent.pos])
                 for cellmate in cellmates:
-                    if isinstance(cellmate, Waste):
+                    if isinstance(cellmate, Waste) and agent.colour == cellmate.colour:
                         agent.wastelist.append(cellmate)
                         self.grid.remove_agent(cellmate)
                         self.schedule.remove(cellmate)

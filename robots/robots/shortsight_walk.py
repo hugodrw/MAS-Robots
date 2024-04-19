@@ -18,7 +18,7 @@ class ShortSightWalker(mesa.Agent):
     y = None
     moore = True
 
-    def __init__(self, unique_id, pos, model, x_range, moore=True):
+    def __init__(self, unique_id, pos, model, x_range, colour, moore=True):
         """
         grid: The MultiGrid object in which the agent lives.
         x: The agent's current x coordinate
@@ -30,6 +30,7 @@ class ShortSightWalker(mesa.Agent):
         self.pos = pos
         self.moore = moore
         self.range = x_range
+        self.colour = colour
 
     def greedy_move(self):
         """
@@ -48,8 +49,7 @@ class ShortSightWalker(mesa.Agent):
         for cell in grid_cells:
             cell_contents = self.model.grid.get_cell_list_contents(cell)
             for content in cell_contents:
-                    print('content name: ', content.__class__.__name__)  
-                    if content.__class__.__name__ == 'Waste':
+                    if content.__class__.__name__ == 'Waste' and content.colour == self.colour:
                         print('I found waste!')
                         next_move = cell
                         break
