@@ -26,7 +26,7 @@ class RadioactiveEnv(mesa.Model):
         self,
         width=21,
         height=5,
-        initial_wastes_per_zone=2,
+        initial_wastes_per_zone=8,
         initial_robots_per_zone=1
         # TODO: Hardcoded for now in server
     ):
@@ -121,8 +121,6 @@ class RadioactiveEnv(mesa.Model):
         neighbours = []
         # All neighbours in grid
         all_neighbours = list(self.grid.get_neighborhood(current_pos, True, True)) #check moore
-        # Remove the right edge of the grid
-        # all_neighbours = [cell for cell in all_neighbours if cell[0] < self.width]
         # Restric to the robot's zone
         # Restrict the robot to it's zones
         restricted_neighbours = []

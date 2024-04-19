@@ -120,6 +120,19 @@ def deliberate(knowledge: KnowledgeBase):
                     movement = move_right(knowledge)
                 else:
                     handlewaste = 'DropOff'
+            # If it is the robot's colour, look for more waste
+            else:
+                # If waste is available, pick it up
+                if waste_available(knowledge):
+                    handlewaste = 'PickUp'
+                else:
+                    # Look for more wastes
+                    movement = look_for_waste(knowledge)
+        # If no waste, look for waste
+        else:
+            # If waste is available, pick it up
+            if waste_available(knowledge):
+                handlewaste = 'PickUp'
             else:
                 # Look for more wastes
                 movement = look_for_waste(knowledge)
