@@ -13,6 +13,7 @@ import mesa
 
 from .agents import Waste, Robot, Grid_Tile
 from .scheduler import RandomActivationByTypeFiltered
+from .percepts import Percept
 
 
 class RadioactiveEnv(mesa.Model):
@@ -87,31 +88,68 @@ class RadioactiveEnv(mesa.Model):
             # Add the robot to the zone
             for i in range(self.initial_robots_per_zone):
                 # TODO - check if the cell is already occupied
-                # x = self.random.randrange(zone_value[0], zone_value[1])
-                x = 0
+                x = self.random.randrange(zone_value[0], zone_value[1])
+                # x = 0
                 y = self.random.randrange(self.height)
                 robot = Robot(self.next_id(), (x, y), self,zone_value, True,colour=zone_key)
                 self.grid.place_agent(robot, (x, y))
                 self.schedule.add(robot)
 
-    def collect_waste(self):
+
+    def do(self, agent, action):
         '''
-            Add the waste to each robot's waste list if it is on the same cell
+            Take the action determined and return an observation
         '''
-        for agent in self.schedule.agents:
-            if isinstance(agent, Robot):            
-                cellmates = self.grid.get_cell_list_contents([agent.pos])
-                for cellmate in cellmates:
-                    if isinstance(cellmate, Waste) and agent.colour == cellmate.colour:
-                        agent.wastelist.append(cellmate)
-                        self.grid.remove_agent(cellmate)
-                        self.schedule.remove(cellmate)
+
+        #  =====  Do the action  =========
+        # Check if the action is a movement
+        movement, handlewaste = action
+        if movement != None:
+            self.grid.move_agent(agent, movement)
+        if handlewaste != None:
+            # Do the waste handling
+            pass
+
+        #  ====== Get the info needed for percept  =======
+        # Neighbour tuple list
+        current_pos = agent.pos
+        neighbours = []
+        neighbours_locations = list(self.grid.get_neighborhood(current_pos, True, True)) #check moore
+        for cell in neighbours_locations:
+            cell_contents = self.grid.get_cell_list_contents(cell)
+            neighbours.append((cell, cell_contents))
+
+        # neighbours = list(self.grid.get_neighborhood(current_pos, True, True)) #check moore
+        waste_list = self.collect_waste(agent)
+
+        percept = Percept(neighbours, current_pos, waste_list)
+
+        return percept
+
+    def collect_waste(self, agent):
+        '''
+            Add the waste to the robot's waste list if it is on the same cell
+            Return the current waste list
+            # TODO
+        '''
+        # Add waste to the agent's list if it is on the same cell
+        if isinstance(agent, Robot):            
+            cellmates = self.grid.get_cell_list_contents([agent.pos])
+            for cellmate in cellmates:
+                if isinstance(cellmate, Waste) and agent.colour == cellmate.colour:
+                    agent.waste_list.append(cellmate)
+                    self.grid.remove_agent(cellmate)
+                    self.schedule.remove(cellmate)
+        
+        # Return the agent's list so it can be added to percepts
+        return agent.waste_list
+
+        
 
     def step(self):
         self.schedule.step()
         # collect data
         self.datacollector.collect(self)
-        self.collect_waste()
 
     def run_model(self, step_count=200):
         pass
