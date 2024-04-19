@@ -108,7 +108,12 @@ class RadioactiveEnv(mesa.Model):
             self.grid.move_agent(agent, movement)
         if handlewaste != None:
             # Do the waste handling
-            pass
+            if handlewaste == 'PickUp':
+                self.collect_waste(agent)
+            elif handlewaste == 'Transform':
+                self.transform_waste(agent)
+            elif handlewaste == 'DropOff':
+                self.drop_waste(agent)
 
         #  ====== Get the info needed for percept  =======
         # Neighbour tuple list
@@ -116,6 +121,8 @@ class RadioactiveEnv(mesa.Model):
         neighbours = []
         # All neighbours in grid
         all_neighbours = list(self.grid.get_neighborhood(current_pos, True, True)) #check moore
+        # Remove the right edge of the grid
+        # all_neighbours = [cell for cell in all_neighbours if cell[0] < self.width]
         # Restric to the robot's zone
         # Restrict the robot to it's zones
         restricted_neighbours = []
@@ -128,9 +135,10 @@ class RadioactiveEnv(mesa.Model):
             cell_contents = self.grid.get_cell_list_contents(cell)
             neighbours.append((cell, cell_contents))
 
-        # neighbours = list(self.grid.get_neighborhood(current_pos, True, True)) #check moore
-        waste_list = self.collect_waste(agent)
+        # Get the waste list so it can be added to the percepts
+        waste_list = agent.waste_list
 
+        # Build percept object to be sent to agent
         percept = Percept(neighbours, current_pos, waste_list)
 
         return percept
@@ -150,11 +158,33 @@ class RadioactiveEnv(mesa.Model):
                     self.grid.remove_agent(cellmate)
                     self.schedule.remove(cellmate)
         
-        # Return the agent's list so it can be added to percepts
-        return agent.waste_list
+    
+    def transform_waste(self, agent):
+        '''
+            Deletes one waste from the list
+            Changes the color of the remaining waste
+            If green, transform to yellow
+            If yellow, transform to red
+        '''
+        print('Transforming waste')
+        print('Current waste list: ', agent.waste_list)
 
+        agent.waste_list.pop(0)
+        if agent.waste_list[0].colour == 'green':
+            agent.waste_list[0].colour = 'yellow'
+        elif agent.waste_list[0].colour == 'yellow':
+            agent.waste_list[0].colour = 'red'
+
+        print('New waste list: ', agent.waste_list)
+
+    def drop_waste(self, agent):
+        '''
+            Add the current waste to the grid at the current location, and delete it from the wastelist
+        '''
+        waste = agent.waste_list.pop(0)
+        self.grid.place_agent(waste, agent.pos)
+        self.schedule.add(waste)
         
-
     def step(self):
         self.schedule.step()
         # collect data

@@ -49,7 +49,7 @@ def look_for_waste(knowledge: KnowledgeBase):
         # Neighbour is a tuple (cell_location, cell_contents)
         cell_location, cell_contents = neighbour
         for content in cell_contents:
-                if content.__class__.__name__ == 'Waste' and content.colour == knowledge.colour:
+                if content.__class__.__name__ == 'Waste' and content.colour == knowledge.colour and cell_location[0] != knowledge.x_range[1]-1:
                     print('I found waste!')
                     next_move = cell_location
                     break
@@ -59,6 +59,21 @@ def look_for_waste(knowledge: KnowledgeBase):
     
     return next_move
 
+def waste_available(knowledge: KnowledgeBase):
+    '''
+        Check if there is a waste at the current position
+        Return boolean
+    '''
+    waste_here = False
+    for neighbour in knowledge.neighbours:
+        cell_location, cell_contents = neighbour
+        for content in cell_contents:
+                if content.__class__.__name__ == 'Waste' and content.colour == knowledge.colour and cell_location == knowledge.current_pos:
+                    print('Waste available here!')
+                    waste_here = True
+                    break
+    return waste_here
+
 
 def deliberate(knowledge: KnowledgeBase):
     '''
@@ -67,17 +82,75 @@ def deliberate(knowledge: KnowledgeBase):
         Returns:
         Movement: (x,y)
         HandleWaste: 'PickUp', 'DropOff', 'Transform'
+        Note: Cannot do Movement and HandleWaste at same time for now
     '''
 
     movement = None
     handlewaste = None
 
-    if len(knowledge.waste_list) == 2:
-        movement = move_right(knowledge)
+    #  =======  Overall logic =======
 
+    # Red robot logic, no transformation
+    if knowledge.colour == 'red':
+        # If it has a waste, move to the dropoff zone
+        if len(knowledge.waste_list) == 1:
+            if knowledge.current_pos[0] != knowledge.x_range[1]-1:
+                movement = move_right(knowledge)
+            else:
+                handlewaste = 'DropOff'
+
+        # If waste is available and it isn't in the dropoff zone, pick it up
+        elif waste_available(knowledge) and knowledge.current_pos[0] != knowledge.x_range[1]-1:
+            handlewaste = 'PickUp'
+        # If waste is not available, move to the waste
+        else:
+            print('Red robot looking for waste')
+            movement = look_for_waste(knowledge)
+    # Other robots, with transformation
     else:
-        # Greedy move
-        movement = look_for_waste(knowledge)
+        # If it has two wastes, transform
+        if len(knowledge.waste_list) == 2:
+            handlewaste = 'Transform'
+        # If it has one waste
+        if len(knowledge.waste_list) == 1:
+            # Check if the waste has been transformed
+            if knowledge.waste_list[0].colour != knowledge.colour:
+                # Move to the dropoff zone and drop
+                if knowledge.current_pos[0] != knowledge.x_range[1]-1:
+                    movement = move_right(knowledge)
+                else:
+                    handlewaste = 'DropOff'
+            else:
+                # Look for more wastes
+                movement = look_for_waste(knowledge)
+
+
+
+        
+
+
+    # # Check if on the same cell as waste and capicity for more waste
+    # if len(knowledge.waste_list) < 2:
+    #     if waste_available(knowledge):
+    #         # If waste is available, pick it up
+    #         handlewaste = 'PickUp'
+    #     else:
+    #         # Normal movement if no waste available
+    #         movement = look_for_waste(knowledge)
+    
+
+    # # Transform waste if 2 items in waste list and it is not red
+    # if len(knowledge.waste_list) == 2 and knowledge.waste_list[0].colour != 'red':
+    #     handlewaste = 'Transform'
+    
+    # # If waste is not the robot's colour or the waste is red
+    # if len(knowledge.waste_list) == 1 and (knowledge.waste_list[0].colour == 'red' or knowledge.waste_list[0].colour != knowledge.colour):
+    #     # If not in the dropoff zone, move to the dropoff zone
+    #     if knowledge.current_pos[0] != knowledge.x_range[1]-1:
+    #         movement = move_right(knowledge)
+    #     # If in the dropoff zone, dropoff the waste
+    #     else:
+    #         handlewaste = 'DropOff'
 
     return movement, handlewaste
 
