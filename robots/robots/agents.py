@@ -99,6 +99,7 @@ class Robot(ShortSightWalker):
         self.knowledge = KnowledgeBase(colour, x_range)
         self.waste_list = []
         self.percepts = None
+        self.x_range = x_range
     
     def percept(self):
         # The robot is very intrsopective

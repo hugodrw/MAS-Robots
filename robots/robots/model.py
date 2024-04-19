@@ -114,8 +114,17 @@ class RadioactiveEnv(mesa.Model):
         # Neighbour tuple list
         current_pos = agent.pos
         neighbours = []
-        neighbours_locations = list(self.grid.get_neighborhood(current_pos, True, True)) #check moore
-        for cell in neighbours_locations:
+        # All neighbours in grid
+        all_neighbours = list(self.grid.get_neighborhood(current_pos, True, True)) #check moore
+        # Restric to the robot's zone
+        # Restrict the robot to it's zones
+        restricted_neighbours = []
+        for cell in all_neighbours:
+            if cell[0] in range(0,agent.x_range[1]):
+                restricted_neighbours.append(cell)
+
+        # Look at contents of the restrcited neighbours
+        for cell in restricted_neighbours:
             cell_contents = self.grid.get_cell_list_contents(cell)
             neighbours.append((cell, cell_contents))
 
