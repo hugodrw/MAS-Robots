@@ -211,10 +211,7 @@ class Robot(mesa.Agent):
         """
         A model step. 
         """
-        # self.percept()
-        # self.deliberate()
-        # self.do()
-        # # self.random_move()
+    
         if self.percepts is not None:
             # Normal case
             print('normal')
