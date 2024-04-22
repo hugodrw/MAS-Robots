@@ -28,7 +28,7 @@ class RadioactiveEnv(mesa.Model):
         self,
         width=21,
         height=5,
-        initial_wastes_per_zone=12,
+        initial_wastes_per_zone=6,
         initial_robots_per_zone=1
         # TODO: Hardcoded for now in server
     ):
@@ -135,7 +135,7 @@ class RadioactiveEnv(mesa.Model):
         # Restrict the robot to it's zones
         restricted_neighbours = []
         for cell in all_neighbours:
-            if cell[0] in range(agent.x_range[0]-1,agent.x_range[1]):
+            if cell[0] in range(0,agent.x_range[1]):
                 restricted_neighbours.append(cell)
 
         # Look at contents of the restrcited neighbours
