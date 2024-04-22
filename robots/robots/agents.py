@@ -83,7 +83,7 @@ def deliberate(knowledge: KnowledgeBase):
         Returns an action for the environment
         Returns:
         Movement: (x,y)
-        HandleWaste: 'PickUp', 'DropOff', 'Transform'
+        HandleWaste: 'PickUp', 'DropOffandSendMessage', 'Transform','DropOff'
         Note: Cannot do Movement and HandleWaste at same time for now
     '''
 
@@ -121,7 +121,7 @@ def deliberate(knowledge: KnowledgeBase):
                 if knowledge.current_pos[0] != knowledge.x_range[1]-1:
                     movement = move_right(knowledge)
                 else:
-                    handlewaste = 'DropOff'
+                    handlewaste = 'DropOffandSendMessage'
             # If it is the robot's colour, look for more waste
             else:
                 # If waste is available, pick it up
@@ -208,17 +208,19 @@ class Robot(CommunicatingAgent):
             self.greedy_move()
         elif self.policy == 'go_to_dropoff_zone':
             self.move_right()
+    
+
             
     def step(self):
         """
         A model step. 
         """
-    
         if self.percepts is not None:
             # Normal case
             print('normal')
             self.knowledge = update(self.knowledge, self.percepts)
-            action = deliberate(self.knowledge) 
+            action = deliberate(self.knowledge)
+            
         else:
             # First observation
             action = (None, None)

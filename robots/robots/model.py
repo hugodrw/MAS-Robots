@@ -99,7 +99,7 @@ class RadioactiveEnv(mesa.Model):
                 self.grid.place_agent(robot, (x, y))
                 self.schedule.add(robot)
 
-
+        
     def do(self, agent, action):
         '''
             Take the action determined and return an observation
@@ -116,8 +116,13 @@ class RadioactiveEnv(mesa.Model):
                 self.collect_waste(agent)
             elif handlewaste == 'Transform':
                 self.transform_waste(agent)
-            elif handlewaste == 'DropOff':
+            elif handlewaste == 'DropOff': # only for red robot
                 self.drop_waste(agent)
+            elif handlewaste == 'DropOffandSendMessage':
+                self.drop_waste(agent)
+                # Send a message to the other robots to let them know that the waste has been dropped off
+                self.inform_waste_location(agent)
+               
 
         #  ====== Get the info needed for percept  =======
         # Neighbour tuple list
@@ -186,6 +191,27 @@ class RadioactiveEnv(mesa.Model):
         waste = agent.waste_list.pop(0)
         self.grid.place_agent(waste, agent.pos)
         self.schedule.add(waste)
+        
+    def inform_waste_location(self, agent):
+        # only yellow and green robots will send mesages
+        print("inform waste location")
+        if agent.colour == 'yellow' :
+            # send a message to the red robot
+            for target_agent in self.schedule.agents:
+                if isinstance(target_agent, Robot) and target_agent.colour == 'red':
+                    message = Message(agent.unique_id,target_agent.unique_id , MessagePerformative.INFORM_REF, agent.pos)
+                    agent.send_message(message) # message send to red 
+                    print('Message sent to red robot')
+                    print(message.get_content())
+        if agent.colour == 'green':
+            for target_agent in self.schedule.agents:
+                if isinstance(target_agent, Robot) and target_agent.colour == 'yellow':
+                    message = Message(agent.unique_id,target_agent.unique_id , MessagePerformative.INFORM_REF, agent.pos)
+                    agent.send_message(message) # message send to red 
+                    print(message.get_content())
+                    print('Message sent to yellow robot')
+
+            
         
     def step(self):
         self.__messages_service.dispatch_messages()
