@@ -54,12 +54,3 @@
 
   </p>
 
-  ## Readme
-
-  This repository contains the codebase for a robotic waste management system. The system is designed to efficiently collect, transform, and dispose of different types of waste using three types of robots: Green, Yellow, and Red. Each robot has specific tasks and movement capabilities within designated zones. The project implements a deliberation mechanism for decision-making and utilizes a communication protocol for waste management coordination.
-
-  The codebase is organized into modules for agent behavior, deliberation, and communication. Detailed documentation for each module is provided within the respective directories. Additionally, instructions for setup and usage are outlined in the readme files accompanying each module.
-
-  Contributors are encouraged to adhere to coding standards and documentation guidelines outlined in the project's contribution guidelines. For any questions or issues, please refer to the provided contact information.
-
-  Thank you for contributing to our effort to build a more sustainable waste management solution!
