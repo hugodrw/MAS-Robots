@@ -1,6 +1,6 @@
   # Project Overview
 
-  This project involves the development of a robotic waste management system comprising three types of robots: Green, Yellow, and Red. Each robot has specific capabilities and limitations in handling different types of waste within designated zones. The project aims to efficiently collect and manage waste according to predefined rules while utilizing a communication protocol for waste management coordination.
+  This Multi-Agent System project involves the development of a robotic waste management system comprising three types of robots: Green, Yellow, and Red. Each robot has specific capabilities and limitations in handling different types of waste within designated zones. The project aims to efficiently collect and manage waste according to predefined rules while utilizing a communication protocol for waste management coordination.
 
   ## General Instructions
 
