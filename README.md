@@ -54,3 +54,8 @@
 
   </p>
 
+
+To run the app:
+  ```sh
+    python run.py 
+  ```
