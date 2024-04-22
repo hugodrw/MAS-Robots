@@ -3,6 +3,8 @@ from collections import namedtuple
 import random
 
 
+from robots.communication.agent.CommunicatingAgent import CommunicatingAgent
+
 # Helper classes
 class KnowledgeBase():
     # The knowledge base for the robot
@@ -168,7 +170,7 @@ def deliberate(knowledge: KnowledgeBase):
     return movement, handlewaste
 
 
-class Robot(mesa.Agent):
+class Robot(CommunicatingAgent):
     """
     Robots!
     """
@@ -178,7 +180,7 @@ class Robot(mesa.Agent):
         # self.wastelist = []
         # self.policy = 'greedy'
 
-        super().__init__(unique_id, model)
+        super().__init__(unique_id, model,colour)
         # Setup the knowledge base
         self.knowledge = KnowledgeBase(colour, x_range)
         # Generally available variables

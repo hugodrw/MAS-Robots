@@ -14,14 +14,16 @@ import mesa
 from .agents import Waste, Robot, Grid_Tile
 from .scheduler import RandomActivationByTypeFiltered
 from .percepts import Percept
+from robots.communication.agent.CommunicatingAgent import CommunicatingAgent
+from robots.communication.message.Message import Message
+from robots.communication.message.MessagePerformative import MessagePerformative
+from robots.communication.message.MessageService import MessageService
 
 
 class RadioactiveEnv(mesa.Model):
     """
     Radioactive environment model
     """
-    
-
     def __init__(
         self,
         width=21,
@@ -37,11 +39,16 @@ class RadioactiveEnv(mesa.Model):
 
         """
         super().__init__()
+         # set messages 
+        self.schedule = RandomActivationByTypeFiltered(self)
+        self.__messages_service = MessageService(self.schedule)
+        MessageService.get_instance().set_instant_delivery(False)
         # Set parameters
         self.width = width
         self.height = height
         self.initial_wastes_per_zone = initial_wastes_per_zone
         self.initial_robots_per_zone = initial_robots_per_zone
+       
 
         # Check if the width is divisible by 3, otherwise throw an error
         if self.width % 3 != 0:
@@ -51,10 +58,7 @@ class RadioactiveEnv(mesa.Model):
         self.zone_locations = {'green':(0, self.width//3),
             'yellow':(self.width//3, self.width*2//3),
             'red':(self.width*2//3, self.width)}
-
-        # Setup the scheduler
-        self.schedule = RandomActivationByTypeFiltered(self)
-
+        
         # Setup the data collector
         self.datacollector = mesa.DataCollector(
             {
@@ -184,6 +188,7 @@ class RadioactiveEnv(mesa.Model):
         self.schedule.add(waste)
         
     def step(self):
+        self.__messages_service.dispatch_messages()
         self.schedule.step()
         # collect data
         self.datacollector.collect(self)
