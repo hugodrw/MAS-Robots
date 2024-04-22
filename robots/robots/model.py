@@ -22,7 +22,7 @@ from robots.communication.message.MessageService import MessageService
 
 class RadioactiveEnv(mesa.Model):
     """
-    Radioactive environment model
+        Base Class for the Radioactive Environment
     """
     def __init__(
         self,
@@ -165,7 +165,6 @@ class RadioactiveEnv(mesa.Model):
         '''
             Add the waste to the robot's waste list if it is on the same cell
             Return the current waste list
-            # TODO
         '''
         # Add waste to the agent's list if it is on the same cell
         if isinstance(agent, Robot):            

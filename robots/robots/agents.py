@@ -168,45 +168,17 @@ def deliberate(knowledge: KnowledgeBase):
                 movement = look_for_waste(knowledge)
 
 
-
-        
-
-
-    # # Check if on the same cell as waste and capicity for more waste
-    # if len(knowledge.waste_list) < 2:
-    #     if waste_available(knowledge):
-    #         # If waste is available, pick it up
-    #         handlewaste = 'PickUp'
-    #     else:
-    #         # Normal movement if no waste available
-    #         movement = look_for_waste(knowledge)
-    
-
-    # # Transform waste if 2 items in waste list and it is not red
-    # if len(knowledge.waste_list) == 2 and knowledge.waste_list[0].colour != 'red':
-    #     handlewaste = 'Transform'
-    
-    # # If waste is not the robot's colour or the waste is red
-    # if len(knowledge.waste_list) == 1 and (knowledge.waste_list[0].colour == 'red' or knowledge.waste_list[0].colour != knowledge.colour):
-    #     # If not in the dropoff zone, move to the dropoff zone
-    #     if knowledge.current_pos[0] != knowledge.x_range[1]-1:
-    #         movement = move_right(knowledge)
-    #     # If in the dropoff zone, dropoff the waste
-    #     else:
-    #         handlewaste = 'DropOff'
-
     return movement, handlewaste
 
 
 class Robot(CommunicatingAgent):
     """
     Robots!
+
+    Base Class for the robot Agents
     """
 
     def __init__(self, unique_id, pos, model, x_range, moore, colour='yellow'):
-        # super().__init__(unique_id, pos, model, x_range, colour, moore=moore)
-        # self.wastelist = []
-        # self.policy = 'greedy'
 
         super().__init__(unique_id, model,colour)
         # Setup the knowledge base
@@ -218,26 +190,6 @@ class Robot(CommunicatingAgent):
         self.pos = pos
         self.colour = colour
     
-    def percept(self):
-        # The robot is very intrsopective
-        if len(self.wastelist) > 0:
-            print("I have waste!")
-            print('items in the list: ', len(self.wastelist))
-    
-    def deliberate(self):
-        if len(self.wastelist) == 2:
-            self.policy = 'go_to_dropoff_zone'
-        else:
-            self.policy = 'greedy'
-
-    
-    def do(self):
-        if self.policy == 'greedy':
-            self.greedy_move()
-        elif self.policy == 'go_to_dropoff_zone':
-            self.move_right()
-    
-
             
     def step(self):
         """
@@ -258,8 +210,6 @@ class Robot(CommunicatingAgent):
         print('percepts: ', self.percepts)
 
 
-
-
 class Waste(CommunicatingAgent):
     """
     Waste baby!
@@ -277,7 +227,6 @@ class Grid_Tile(CommunicatingAgent):
     """
     Colour baby!
     """
-
     def __init__(self, unique_id, pos, model, colour='yellow'):
         super().__init__(unique_id, model,'tile')
         self.colour = colour
