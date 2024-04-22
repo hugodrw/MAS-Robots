@@ -16,6 +16,7 @@ class KnowledgeBase():
         self.neighbours = None
         self.current_pos = None
         self.waste_list = []
+        self.received_waste_locations= []
 
 # Helper Functions
 def update(knowledge, percepts):
@@ -23,6 +24,12 @@ def update(knowledge, percepts):
     knowledge.neighbours = percepts.neighbours
     knowledge.current_pos = percepts.current_pos
     knowledge.waste_list = percepts.waste_list
+    if percepts.received_waste_location is not None:
+        knowledge.received_waste_locations.append(percepts.received_waste_location)
+    if percepts.pickedup_waste == True:
+        # remove the current pos from the received waste locations
+        if percepts.current_pos in knowledge.received_waste_locations:
+            knowledge.received_waste_locations.remove(percepts.current_pos)
     
     return knowledge
 
@@ -56,10 +63,31 @@ def look_for_waste(knowledge: KnowledgeBase):
                     next_move = cell_location
                     break
     if next_move is None:
-        print('No waste found!')
-        next_move = random.choice(knowledge.neighbours)[0]
+        if len(knowledge.received_waste_locations) > 0:
+            # there is at least one waste to go to
+            target_location = knowledge.received_waste_locations[0]
+            next_move = go_to_target_location(target_location, knowledge.current_pos)
+        else : 
+            print('No waste found!')
+            next_move = random.choice(knowledge.neighbours)[0]
     
     return next_move
+
+
+def go_to_target_location(target_location,current_location):
+
+    current_x, current_y = current_location
+    target_x, target_y = target_location
+
+    # Calculate the differences in x and y coordinates
+    dx = target_x - current_x
+    dy = target_y - current_y
+    
+    # Determine the direction to move in each axis
+    next_x = current_x + (dx // abs(dx) if dx != 0 else 0)
+    next_y = current_y + (dy // abs(dy) if dy != 0 else 0)
+    
+    return (next_x, next_y)
 
 def waste_available(knowledge: KnowledgeBase):
     '''
@@ -232,27 +260,28 @@ class Robot(CommunicatingAgent):
 
 
 
-class Waste(mesa.Agent):
+class Waste(CommunicatingAgent):
     """
     Waste baby!
     """
 
     def __init__(self, unique_id, pos, model, colour='yellow'):
-        super().__init__(unique_id, model)
+        super().__init__(unique_id, model,'waste')
         self.colour = colour
         pass
 
     def step(self):
         pass
 
-class Grid_Tile(mesa.Agent):
+class Grid_Tile(CommunicatingAgent):
     """
     Colour baby!
     """
 
     def __init__(self, unique_id, pos, model, colour='yellow'):
-        super().__init__(unique_id, model)
+        super().__init__(unique_id, model,'tile')
         self.colour = colour
+        
         pass
 
     def step(self):

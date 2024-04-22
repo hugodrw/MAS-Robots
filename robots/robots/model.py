@@ -104,15 +104,16 @@ class RadioactiveEnv(mesa.Model):
         '''
             Take the action determined and return an observation
         '''
-
         #  =====  Do the action  =========
         # Check if the action is a movement
         movement, handlewaste = action
+        pickedup_waste = False
         if movement != None:
             self.grid.move_agent(agent, movement)
         if handlewaste != None:
             # Do the waste handling
             if handlewaste == 'PickUp':
+                pickedup_waste =True
                 self.collect_waste(agent)
             elif handlewaste == 'Transform':
                 self.transform_waste(agent)
@@ -144,9 +145,19 @@ class RadioactiveEnv(mesa.Model):
 
         # Get the waste list so it can be added to the percepts
         waste_list = agent.waste_list
-
+        # Get the waste location send to store after
+        waste_location = None
+        # check messages 
+        new_messages = agent.get_new_messages()
+        if len(new_messages) != 0:
+            print("y a des messages")
+            for message in new_messages:
+                if message.get_performative() == MessagePerformative.INFORM_REF:
+                    waste_location = message.get_content()
+                    print('Waste location received from message: ', waste_location)
+                
         # Build percept object to be sent to agent
-        percept = Percept(neighbours, current_pos, waste_list)
+        percept = Percept(neighbours, current_pos, waste_list,waste_location,pickedup_waste)
 
         return percept
 
@@ -193,23 +204,24 @@ class RadioactiveEnv(mesa.Model):
         self.schedule.add(waste)
         
     def inform_waste_location(self, agent):
-        # only yellow and green robots will send mesages
-        print("inform waste location")
+        '''
+            green robot sends a message to the yellow robot
+            yellow robot sends a message to the red robot
+        '''
         if agent.colour == 'yellow' :
             # send a message to the red robot
             for target_agent in self.schedule.agents:
                 if isinstance(target_agent, Robot) and target_agent.colour == 'red':
-                    message = Message(agent.unique_id,target_agent.unique_id , MessagePerformative.INFORM_REF, agent.pos)
+                    message = Message(agent.colour ,target_agent.colour, MessagePerformative.INFORM_REF, agent.pos)
                     agent.send_message(message) # message send to red 
-                    print('Message sent to red robot')
-                    print(message.get_content())
+                    print('Message sent from yellow to red robot')
+                
         if agent.colour == 'green':
             for target_agent in self.schedule.agents:
                 if isinstance(target_agent, Robot) and target_agent.colour == 'yellow':
-                    message = Message(agent.unique_id,target_agent.unique_id , MessagePerformative.INFORM_REF, agent.pos)
+                    message = Message(agent.colour,target_agent.colour , MessagePerformative.INFORM_REF, agent.pos)
                     agent.send_message(message) # message send to red 
-                    print(message.get_content())
-                    print('Message sent to yellow robot')
+                    print('Message sent from green to yellow robot')
 
             
         
