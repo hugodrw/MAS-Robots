@@ -55,6 +55,36 @@
   </p>
 
 
+```
+├── README.md
+└── robots
+    ├── __init__.py
+    ├── requirements.txt
+    ├── robots
+    │   ├── __init__.py
+    │   ├── agents.py
+    │   ├── communication
+    │   │   ├── __init__.py
+    │   │   ├── agent
+    │   │   │   ├── CommunicatingAgent.py
+    │   │   │   └── __init__.py
+    │   │   ├── mailbox
+    │   │   │   ├── Mailbox.py
+    │   │   │   └── __init__.py
+    │   │   ├── message
+    │   │   │   ├── Message.py
+    │   │   │   ├── MessagePerformative.py
+    │   │   │   ├── MessageService.py
+    │   │   │   └── __init__.py
+    │   │   └── requirements.txt
+    │   ├── model.py
+    │   ├── percepts.py
+    │   ├── resources
+    │   ├── scheduler.py
+    │   └── server.py
+    └── run.py
+```
+
 To run the app:
   ```sh
     python run.py 
