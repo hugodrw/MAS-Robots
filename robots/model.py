@@ -1,14 +1,3 @@
-"""
-Wolf-Sheep Predation Model
-================================
-
-Replication of the model found in NetLogo:
-    Wilensky, U. (1997). NetLogo Wolf Sheep Predation model.
-    http://ccl.northwestern.edu/netlogo/models/WolfSheepPredation.
-    Center for Connected Learning and Computer-Based Modeling,
-    Northwestern University, Evanston, IL.
-"""
-
 import mesa
 
 from .agents import Waste, Robot, Grid_Tile
@@ -22,7 +11,7 @@ from robots.communication.message.MessageService import MessageService
 
 class RadioactiveEnv(mesa.Model):
     """
-    Radioactive environment model
+        Base Class for the Radioactive Environment
     """
     def __init__(
         self,
@@ -165,7 +154,6 @@ class RadioactiveEnv(mesa.Model):
         '''
             Add the waste to the robot's waste list if it is on the same cell
             Return the current waste list
-            # TODO
         '''
         # Add waste to the agent's list if it is on the same cell
         if isinstance(agent, Robot):            
